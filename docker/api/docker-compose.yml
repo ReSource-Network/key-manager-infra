@@ -14,14 +14,6 @@ x-default-variables: &default-variables
   DB_DATABASE: ${DB_DATABASE-wallets}
   DB_POOLSIZE: ${DB_POOLSIZE-}
   DB_POOL_TIMEOUT: ${DB_POOL_TIMEOUT-}
-  AUTH_OIDC_ISSUER_URL: ${AUTH_OIDC_ISSUER_URL-}
-  AUTH_OIDC_AUDIENCE: ${AUTH_OIDC_AUDIENCE-}
-  AUTH_OIDC_PERMISSIONS_CLAIMS: ${AUTH_OIDC_PERMISSIONS_CLAIMS-}
-  AUTH_OIDC_CUSTOM_CLAIMS: ${AUTH_OIDC_CUSTOM_CLAIMS-}
-  HTTPS_ENABLED: ${HTTPS_ENABLED-}
-  HTTPS_SERVER_KEY: ${HTTPS_SERVER_KEY-}
-  HTTPS_SERVER_CERT: ${HTTPS_SERVER_CERT-}
-  AUTH_TLS_CA: ${AUTH_TLS_CA-}
   AUTH_API_KEY_FILE: ${AUTH_API_KEY_FILE-}
 
 services:
@@ -61,7 +53,7 @@ services:
       - migration
     command: run
     volumes:
-      - ./manifests:/manifests/manifests:ro
+      - ./manifests:/manifests:ro
     restart: "on-failure"
     networks:
       - vault

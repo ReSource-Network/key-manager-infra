@@ -1,0 +1,32 @@
+- kind: Vault
+  name: hashicorp-vault
+  type: hashicorp
+  specs:
+    mount_point: quorum
+    address: http://vault:8200
+    token: DevVaultToken
+    namespace: vault-user
+
+- kind: Store
+  type: key
+  name: hashicorp-keys
+  specs:
+    vault: hashicorp-vault
+
+- kind: Store
+  type: secret
+  name: hashicorp-secrets
+  specs:
+    vault: hashicorp-vault
+
+- kind: Store
+  type: ethereum
+  name: hashicorp-eth
+  specs:
+    key_store: hashicorp-keys
+
+- kind: Node
+  name: hardhat
+  specs:
+    rpc:
+      addr: http://localhost:8545

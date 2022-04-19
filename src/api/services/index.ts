@@ -1,0 +1,6 @@
+export { KeysService } from "./KeysService"
+export { RegistriesService } from "./RegistriesService"
+export { SecretsService } from "./SecretsService"
+export { UtilitiesService } from "./UtilitiesService"
+export { EthereumService } from "./EthereumService"
+export { AliasesService } from "./AliasesService"

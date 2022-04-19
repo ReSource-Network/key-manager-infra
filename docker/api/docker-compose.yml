@@ -1,0 +1,77 @@
+version: "3.8"
+
+x-default-variables: &default-variables
+  LOG_LEVEL: ${LOG_LEVEL-INFO}
+  LOG_FORMAT: ${LOG_FORMAT-text}
+  HTTP_PORT: ${HTTP_PORT-8080}
+  HTTP_HOST: ${HTTP_HOST-0.0.0.0}
+  HEALTH_PORT: ${HEALTH_PORT-8081}
+  DB_TLS_SSLMODE: ${DB_TLS_SSLMODE-disable}
+  DB_HOST: ${DB_HOST-postgres}
+  DB_USER: ${DB_USER-docker}
+  DB_PASSWORD: ${DB_PASSWORD-docker}
+  DB_PORT: ${DB_PORT-5432}
+  DB_DATABASE: ${DB_DATABASE-wallets}
+  DB_POOLSIZE: ${DB_POOLSIZE-}
+  DB_POOL_TIMEOUT: ${DB_POOL_TIMEOUT-}
+  AUTH_OIDC_ISSUER_URL: ${AUTH_OIDC_ISSUER_URL-}
+  AUTH_OIDC_AUDIENCE: ${AUTH_OIDC_AUDIENCE-}
+  AUTH_OIDC_PERMISSIONS_CLAIMS: ${AUTH_OIDC_PERMISSIONS_CLAIMS-}
+  AUTH_OIDC_CUSTOM_CLAIMS: ${AUTH_OIDC_CUSTOM_CLAIMS-}
+  HTTPS_ENABLED: ${HTTPS_ENABLED-}
+  HTTPS_SERVER_KEY: ${HTTPS_SERVER_KEY-}
+  HTTPS_SERVER_CERT: ${HTTPS_SERVER_CERT-}
+  AUTH_TLS_CA: ${AUTH_TLS_CA-}
+  AUTH_API_KEY_FILE: ${AUTH_API_KEY_FILE-}
+
+services:
+  postgres:
+    image: postgres:13.4-alpine
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_USER: docker
+      DB_HOST: 127.0.0.1
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./scripts/db-init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: "on-failure"
+
+  migration:
+    image: 446481105531.dkr.ecr.us-east-2.amazonaws.com/key-manager:latest
+    environment:
+      <<: *default-variables
+      DB_HOST: ${DB_HOST-postgres}
+    command: migrate up
+    restart: "on-failure"
+    depends_on:
+      - postgres
+
+  key-manager:
+    image: 446481105531.dkr.ecr.us-east-2.amazonaws.com/key-manager:latest
+    environment:
+      <<: *default-variables
+      MANIFEST_PATH: ${MANIFEST_PATH-/manifests}
+      DB_HOST: ${DB_HOST-postgres}
+    ports:
+      - 8080:8080
+      - 8081:8081
+    depends_on:
+      - migration
+    command: run
+    volumes:
+      - ./manifests:/manifests/manifests:ro
+    restart: "on-failure"
+    networks:
+      - vault
+      - default
+
+volumes:
+  db-data-api:
+    driver: local
+
+networks:
+  vault:
+    external:
+      name: vault_vault

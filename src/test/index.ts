@@ -10,7 +10,7 @@ import { MockERC20__factory } from "../types/factories/MockERC20__factory"
 
 const getSigner = async () => {
   try {
-    const address = (await createAccount()).address as string // TODO fill in with account after sending erc20 & ether
+    const address = "0x71626773cec0c77fb9e6229d4cb0fb3cd38710cc"
     const provider = new JsonRpcProvider("http://localhost:8545")
     const signer = new RemoteSigner({
       chainId: 31337,
@@ -27,7 +27,7 @@ const getSigner = async () => {
 const main = async () => {
   const { signer, provider } = await getSigner()
   const toAddr = (await createAccount()).address
-  const erc20Addr = "0x99bba657f2bbc93c02d617f8ba121cb8fc104acf" // TODO add erc20 contract address
+  const erc20Addr = "0x95401dc811bb5740090279Ba06cfA8fcF6113778" // TODO add erc20 contract address
 
   const erc20 = new Contract(erc20Addr, MockERC20__factory.createInterface(), signer) as MockERC20
   const { data } = await erc20.populateTransaction.transfer(toAddr ?? "", parseEther("1"))

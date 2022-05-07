@@ -47,7 +47,7 @@ services:
       MANIFEST_PATH: ${MANIFEST_PATH-/manifests}
       DB_HOST: ${DB_HOST-postgres}
     ports:
-      - 8080:8080
+      - 8080:80
       - 8081:8081
     depends_on:
       - migration
